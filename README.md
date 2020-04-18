@@ -5,7 +5,7 @@ This package helps you to build messaging job on attributes.
 ### Download
 The latest stable release is available on NuGet: https://www.nuget.org/packages/RabbitMq.Attributes/
 
-`Install-Package RabbitMq.Attributes -Version 1.0.0`
+`Install-Package RabbitMq.Attributes -Version 1.0.1`
 
 #### Example:
 
@@ -17,6 +17,9 @@ Program.cs
     {
         public static void Main(string[] args)
         {
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
             var services = new ServiceCollection();
 
             // add logging
@@ -31,7 +34,9 @@ Program.cs
                 x.HostName = "localhost";
                 x.Port = 5672;
             });
-
+            services.AddSingleton(provider => configuration);
+            services.AddSingleton<QueueClass>();
+            
             // start listener
             ServiceProvider serviceProvider = services.BuildServiceProvider();
             serviceProvider.StartQueueListener();
